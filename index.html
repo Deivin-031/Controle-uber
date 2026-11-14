@@ -109,15 +109,15 @@ function render(){
  document.getElementById('uberSobrou').textContent=estimativaCompleta?money(resultado):'—';
  // Distância fora das jornadas, calculada entre leituras consecutivas do odômetro.
  // Não altera faturamento, combustível profissional, lucro ou meta.
- const jornadasOrdenadas=[...db.jornadas].filter(j=>j.dataFim&&Number.isFinite(Number(j.kmInicio))&&Number.isFinite(Number(j.kmFim))&&num(j.kmFim)>=num(j.kmInicio)).sort((a,b)=>String(a.data||'').localeCompare(String(b.data||''))||num(a.kmInicio)-num(b.kmInicio));
+ const jornadasOrdenadas=[...db.jornadas].filter(j=>j.dataFim&&Number.isFinite(Number(j.kmInicio))&&Number.isFinite(Number(j.kmFim))&&num(j.kmFim)>=num(j.kmInicio)).sort((a,b)=>String(a.dataInicio||a.dataFim||'').localeCompare(String(b.dataInicio||b.dataFim||''))||num(a.kmInicio)-num(b.kmInicio));
  let kmPessoalMes=0,custoPessoalMes=0,semEstimativaPessoal=false,intervalosPessoais=0;
  for(let i=1;i<jornadasOrdenadas.length;i++){
   const anterior=jornadasOrdenadas[i-1],proxima=jornadasOrdenadas[i];
   const diferenca=num(proxima.kmInicio)-num(anterior.kmFim);
-  if(diferenca<=0||!String(proxima.data||'').startsWith(prefix))continue;
+  if(diferenca<=0||!String(proxima.dataInicio||proxima.dataFim||'').startsWith(prefix))continue;
   kmPessoalMes+=diferenca;intervalosPessoais++;
   const consumo=num(anterior.kmL)>0?num(anterior.kmL):num(proxima.kmL);
-  const preco=precoAte(String(proxima.data||''));
+  const preco=precoAte(String(proxima.dataInicio||proxima.dataFim||''));
   if(consumo>0&&preco>0)custoPessoalMes+=diferenca/consumo*preco;
   else semEstimativaPessoal=true;
  }
